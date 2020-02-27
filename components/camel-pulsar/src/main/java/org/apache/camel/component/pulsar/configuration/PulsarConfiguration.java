@@ -18,6 +18,7 @@ package org.apache.camel.component.pulsar.configuration;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.camel.AsyncCallback;
 import org.apache.camel.component.pulsar.PulsarMessageReceipt;
 import org.apache.camel.component.pulsar.utils.consumers.SubscriptionInitialPosition;
 import org.apache.camel.component.pulsar.utils.consumers.SubscriptionType;
@@ -59,6 +60,8 @@ public class PulsarConfiguration {
     private SubscriptionInitialPosition subscriptionInitialPosition = LATEST;
     @UriParam(label = "consumer", description = "Maximum number of times that a message will be redelivered before being sent to the dead letter queue. If this value is not set, no Dead Letter Policy will be created")
     private Integer maxRedeliverCount;
+    @UriParam(label = "consumer", description = "use async processor for pulsar consumer", defaultValue = "false")
+    private boolean processAsync;
     @UriParam(label = "consumer", description = "Name of the topic where the messages which fail maxRedeliverCount times will be sent. Note: if not set, default topic name will be topicName-subscriptionName-DLQ")
     private String deadLetterTopic;
     @UriParam(label = "producer", description = "Send timeout in milliseconds", defaultValue = "30000")
@@ -384,5 +387,13 @@ public class PulsarConfiguration {
 
     public void setDeadLetterTopic(String deadLetterTopic) {
         this.deadLetterTopic = deadLetterTopic;
+    }
+
+    public boolean isProcessAsync() {
+        return processAsync;
+    }
+
+    public void setProcessAsync(boolean processAsync) {
+        this.processAsync = processAsync;
     }
 }

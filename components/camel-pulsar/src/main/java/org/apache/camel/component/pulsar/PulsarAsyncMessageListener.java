@@ -16,25 +16,23 @@
  */
 package org.apache.camel.component.pulsar;
 
+import org.apache.camel.AsyncProcessor;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.component.pulsar.utils.message.PulsarMessageHeaders;
 import org.apache.camel.component.pulsar.utils.message.PulsarMessageUtils;
 import org.apache.camel.spi.ExceptionHandler;
+import org.apache.camel.support.AsyncProcessorConverterHelper;
 import org.apache.pulsar.client.api.Consumer;
 import org.apache.pulsar.client.api.Message;
-import org.apache.pulsar.client.api.MessageListener;
 
-public class PulsarMessageListener implements MessageListener<byte[]> {
+public class PulsarAsyncMessageListener extends PulsarMessageListener {
 
-    protected final PulsarEndpoint endpoint;
-    protected final ExceptionHandler exceptionHandler;
-    private final Processor processor;
+    private AsyncProcessor asyncProcessor;
 
-    public PulsarMessageListener(PulsarEndpoint endpoint, ExceptionHandler exceptionHandler, Processor processor) {
-        this.endpoint = endpoint;
-        this.exceptionHandler = exceptionHandler;
-        this.processor = processor;
+    public PulsarAsyncMessageListener(PulsarEndpoint endpoint, ExceptionHandler exceptionHandler, Processor processor) {
+        super(endpoint, exceptionHandler, processor);
+        asyncProcessor = AsyncProcessorConverterHelper.convert(processor);
     }
 
     @Override
@@ -44,9 +42,9 @@ public class PulsarMessageListener implements MessageListener<byte[]> {
         try {
             if (endpoint.getPulsarConfiguration().isAllowManualAcknowledgement()) {
                 exchange.getIn().setHeader(PulsarMessageHeaders.MESSAGE_RECEIPT, endpoint.getComponent().getPulsarMessageReceiptFactory().newInstance(exchange, message, consumer));
-                processor.process(exchange);
+                asyncProcessor.processAsync(exchange);
             } else {
-                processor.process(exchange);
+                asyncProcessor.processAsync(exchange);
                 consumer.acknowledge(message.getMessageId());
             }
         } catch (Exception exception) {

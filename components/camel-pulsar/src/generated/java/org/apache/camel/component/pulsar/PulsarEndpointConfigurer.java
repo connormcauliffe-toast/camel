@@ -37,6 +37,8 @@ public class PulsarEndpointConfigurer extends PropertyConfigurerSupport implemen
         case "negativeAckRedeliveryDelayMicros": target.getPulsarConfiguration().setNegativeAckRedeliveryDelayMicros(property(camelContext, long.class, value)); return true;
         case "numberofconsumers":
         case "numberOfConsumers": target.getPulsarConfiguration().setNumberOfConsumers(property(camelContext, int.class, value)); return true;
+        case "processasync":
+        case "processAsync": target.getPulsarConfiguration().setProcessAsync(property(camelContext, boolean.class, value)); return true;
         case "subscriptioninitialposition":
         case "subscriptionInitialPosition": target.getPulsarConfiguration().setSubscriptionInitialPosition(property(camelContext, org.apache.camel.component.pulsar.utils.consumers.SubscriptionInitialPosition.class, value)); return true;
         case "subscriptionname":
